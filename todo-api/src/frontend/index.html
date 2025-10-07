@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+    const categoriesList = document.getElementById('categories-list');
+    const tasksList = document.getElementById('tasks-list');
+    const categoryNameInput = document.getElementById('category-name');
+
+    async function fetchCategories() {
+    const response = await fetch(`${API_URL}/categories`);
+    const categories = await response.json();
+    categoriesList.innerHTML = '';
+    categories.forEach(cat => {
+        const li = document.createElement('li');
+        li.textContent = `ID: ${cat.id} - ${cat.name}`;
+        categoriesList.appendChild(li);
+    });
+}
+
+async function fetchTasks() {
+    const response = await fetch(`${API_URL}/tasks`);
+    const tasks = await response.json();
+    tasksList.innerHTML = '';
+    tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = `[${task.completed ? '✓' : ' '}] ${task.title} (Category ID: ${task.categoryId})`;
+        tasksList.appendChild(li);
+    });
+}
+
+async function createCategory() {
+    const name = categoryNameInput.value;
+    if (!name) return;
+
+    await fetch(`${API_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+    });
+    categoryNameInput.value = '';
+    fetchCategories();
+}
+fetchCategories();
+fetchTasks();
+    </script>
+    <meta charset="UTF-8">
+    <title>To-Do List</title>
+    <style>body { font-family: sans-serif; }</style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+
+    <h2>Categories</h2>
+    <ul id="categories-list"></ul>
+    <input type="text" id="category-name" placeholder="New category name">
+    <button onclick="createCategory()">Add Category</button>
+
+    <hr>
+
+    <h2>Tasks</h2>
+    <ul id="tasks-list"></ul>
+
+</body>
+</html>
